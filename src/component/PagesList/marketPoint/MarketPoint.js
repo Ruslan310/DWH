@@ -1,11 +1,11 @@
 import React from 'react';
 
-const Country = () => {
+const MarketPoint = () => {
     return (
         <div>
-            страна
+            ТТ
         </div>
     );
 };
 
-export default Country;
+export default MarketPoint;

@@ -1,6 +1,7 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import {connect} from "react-redux";
-import {getCardList, setCardListPage, whatListPage} from "../store/action";
+import {getCardList, setCardListPage, setFilterList, setSelectPageOnCardList, whatListPage} from "../store/action";
+import {getProductList} from "../store/helpFunction";
 
 const mapStateToProps = (state) => ({
     cardList: state.main.cardList,
@@ -8,7 +9,7 @@ const mapStateToProps = (state) => ({
 })
 
 const mapDispatchToProps = ({
-    whatListPage, getCardList,setCardListPage
+    whatListPage, getCardList,setCardListPage, setFilterList,setSelectPageOnCardList
 })
 
 
@@ -17,10 +18,40 @@ const Navigation$ = (props) => {
     const onCardListPage = async () => {
         props.whatListPage('cardList')
         props.setCardListPage('list')
+        props.setSelectPageOnCardList(1)
+        props.getCardList(await getProductList(0, 15, [173, 2, 3, 24], [
+            {
+                columnId: 5,
+                columnValue: [45],
+                compareType: "In"
+            },
+            {
+                columnId: 3,
+                columnValue: "",
+                compareType: "NotEqual"
+            },
+            {
+                columnId: 2,
+                columnValue: "",
+                compareType: "NotEqual"
+            },
+            {
+                columnId: 24,
+                columnValue: 10,
+                compareType: "More"
+            }
+        ]))
     }
-    const onCountryPage = async () => {
+    const onMarketPointPage = async () => {
         props.whatListPage('countryList')
     }
+
+    useEffect( () => {
+        if(props.whatPageOpen !== "cardList") {
+            props.setFilterList([])
+            props.setSelectPageOnCardList(1)
+        }
+    },[]) // eslint-disable-line
     return (
         <div className='wrapperBlockNavigation'>
             <div className='wrapperNavigationLogo'>
@@ -33,9 +64,9 @@ const Navigation$ = (props) => {
                 <p className={props.whatPageOpen === 'cardList' ? 'navigationChangePage activeNavigation'
                     : 'navigationChangePage'}
                    onClick={onCardListPage}>Карточка товара - DimGoods</p>
-                <p className={props.whatPageOpen === 'countryList' ? 'navigationChangePage activeNavigation'
+                <p className={props.whatPageOpen === 'marketPoint' ? 'navigationChangePage activeNavigation'
                     : 'navigationChangePage'}
-                   onClick={onCountryPage}>39 / 1С/ Страна - DimGeoCountry</p>
+                   onClick={onMarketPointPage}>39 / 1С/  - DimGeoCountry</p>
             </div>
         </div>
     );

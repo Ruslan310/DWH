@@ -152,11 +152,9 @@ hr {
     height: 100vh;
     position: fixed;
     right: 0;
-    background-color: #4081f6;
+    background-color: #2981d5;
     display: flex;
     flex-direction: column;
-    /*justify-content: space-between;*/
-    /*align-items: center;*/
     padding: 10px 0;
     z-index: 50;
     transition: all .5s;
@@ -173,6 +171,7 @@ hr {
 .inputTextFilterMenu {
     font-size: 16px;
     margin: 8px 0;
+    color: white;
 }
 .inputFilter {
     width: 100%;
@@ -229,6 +228,28 @@ hr {
     justify-content: space-between;
     align-items: center;
 }
+
+/* ****          Position Menu      **** */
+
+.wrapperPosition {
+    height: 100vh;
+    overflow-y: auto;
+}
+
+.positionNumber {
+    margin: 10px;
+    font-weight: bold;
+
+}
+.positionValue {
+    margin: 10px 30px;
+    color: rgb(28, 28, 56);
+    white-space: pre-wrap
+}
+/* ****    End      Position Menu      **** */
+
+
+
 /***********************************************************/
 
 .btn {

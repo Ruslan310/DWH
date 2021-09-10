@@ -1,13 +1,13 @@
 import React from 'react';
-import Country from "./PagesList/Country";
+import MarketPoint from "./PagesList/marketPoint/MarketPoint";
 import {connect} from "react-redux";
 import CardProduct from "./PagesList/CardList/CardProduct";
 import {infoMessage, setCardListPage, setFilterOn} from "../store/action";
 import iconFilter from '../style/filter.png'
 import iconExel from '../style/Exel.png'
 import {exportExelCardList} from "./otherFunction/importExel";
-import {getCountListProduct, getProductList} from "../store/helpFunction";
-import Filter from "./Filter";
+import {getProductList} from "../store/helpFunction";
+import Filter from "./Filter/Filter";
 import Modal from "./otherFunction/Modal";
 
 const mapStateToProps = (state) => ({
@@ -16,6 +16,7 @@ const mapStateToProps = (state) => ({
     isFilter: state.main.isFilter,
     cardList: state.main.cardList,
     textInfoMessage: state.main.textInfoMessage,
+    positionCardList: state.main.positionCardList,
 })
 const mapDispatchToProps = ({
     setCardListPage,setFilterOn, infoMessage
@@ -28,9 +29,27 @@ const MainPage$ = (props) => {
     }
     const exportToEXCEL = async () => {
         if(props.whatCardListPage ==='list' && props.whatPageOpen === 'cardList') {
-            let count = await getCountListProduct()
-            let arr = await getProductList(0, count)
-            exportExelCardList(arr)
+            let arr = await getProductList(0, 400000, [173,2,3,24], [
+                {
+                    columnId: 2,
+                    columnValue: '',
+                    compareType: "NotEqual"
+                },
+                {
+                    columnId: 3,
+                    columnValue: '',
+                    compareType: "NotEqual"
+                },
+                {
+                    columnId: 24,
+                    columnValue: 10,
+                    compareType: "More"
+                }
+                ])
+            exportExelCardList(arr.payload, 'list')
+        }
+        if(props.whatCardListPage ==='position' && props.whatPageOpen === 'cardList') {
+            exportExelCardList(props.positionCardList, 'position')
         }
     }
 
@@ -62,7 +81,7 @@ const MainPage$ = (props) => {
 
             <div className='wrapperListMenu'>
                 {props.whatPageOpen === 'cardList' && <CardProduct />}
-                {props.whatPageOpen === 'countryList' && <Country />}
+                {props.whatPageOpen === 'countryList' && <MarketPoint />}
             </div>
         </div>
     );

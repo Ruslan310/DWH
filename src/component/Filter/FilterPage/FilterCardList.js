@@ -1,57 +1,87 @@
-import React, {useState} from 'react';
+import React from 'react';
+import useInput from "../../../store/hooks/useInput";
+import {getProductList} from "../../../store/helpFunction";
 
 const FilterCardList = (props) => {
 
-    const [ inputArtCode, setInputArtCode] = useState('')
-    const [ inputCode, setInputCode] = useState('')
-    const [ inputDescription, setInputDescription] = useState('')
-    const [ inputDescriptionUa, setInputDescriptionUa] = useState('')
+    const inputArtCode = useInput('')
+    const inputDescription = useInput('')
+    const inputDescriptionUa = useInput('')
 
-    const artCodeHandler = (e) => {
-        setInputArtCode(e.target.value)
+    let artCode = {
+        columnId: 24,
+        columnValue: inputArtCode.value,
+        compareType: "Equal"
     }
-    const codeHandler = (e) => {
-        setInputCode(e.target.value)
+    let description = {
+        columnId: 2,
+        columnValue: inputDescription.value,
+        compareType: "Contain"
     }
-    const descriptionHandler = (e) => {
-        setInputDescription(e.target.value)
-    }
-    const descriptionUaHandler = (e) => {
-        setInputDescriptionUa(e.target.value)
+    let descriptionUa = {
+        columnId: 3,
+        columnValue: inputDescriptionUa.value,
+        compareType: "Contain"
     }
 
-
-    const applyChanges = () => {
-        props.searchFilterCardList({
-            ArtCode: inputArtCode,
-            sk_Goods: inputCode,
-            GoodsName: inputDescription,
-            NameUA: inputDescriptionUa
-        })
-        console.log('changes')
+    const applyChanges = async () => {
+        let someObj = []
+        if (inputArtCode.value) someObj.push(artCode)
+        if (inputDescription.value) someObj.push(description)
+        if (inputDescriptionUa.value) someObj.push(descriptionUa)
+        props.setFilterList(someObj)
+        props.setSelectPageOnCardList(1)
+        let resp = await getProductList(0, 15, [173, 2, 3, 24], someObj)
+        if(resp) props.getCardList(resp)
+        else {
+            inputArtCode.onChange({target: {value: ''}})
+            inputDescription.onChange({target: {value: ''}})
+            inputDescriptionUa.onChange({target: {value: ''}})
+            props.infoMessage('нет данных')
+        }
     }
-    const cancelChanges = () => {
-        setInputArtCode('')
-        setInputCode('')
-        setInputDescription('')
-        setInputDescriptionUa('')
-        console.log('cancel')
+
+    const cancelChanges = async () => {
+        props.setSelectPageOnCardList(1)
+        inputArtCode.onChange({target: {value: ''}})
+        inputDescription.onChange({target: {value: ''}})
+        inputDescriptionUa.onChange({target: {value: ''}})
+        props.getCardList(await getProductList(0, 15, [ 173, 2, 3, 24], [
+            {
+                columnId: 5,
+                columnValue: [45],
+                compareType: "In"
+            },
+            {
+                columnId: 3,
+                columnValue: "",
+                compareType: "NotEqual"
+            },
+            {
+                columnId: 2,
+                columnValue: "",
+                compareType: "NotEqual"
+            },
+            {
+                columnId: 24,
+                columnValue: 10,
+                compareType: "More"
+            }
+        ]))
+        props.setFilterList([])
     }
 
     return (
         <div className='wrapperFilterCardList'>
             <div className='inputFilterMenu'>
                 <p className='inputTextFilterMenu'>Арт код</p>
-                <input className='inputFilter' type="text" value={inputArtCode} onChange={artCodeHandler}/>
-
-                <p className='inputTextFilterMenu'>Код</p>
-                <input className='inputFilter' type="text" value={inputCode} onChange={codeHandler}/>
+                <input className='inputFilter' type="text" {...inputArtCode}/>
 
                 <p className='inputTextFilterMenu'>Наименование</p>
-                <input className='inputFilter' type="text" value={inputDescription} onChange={descriptionHandler}/>
+                <input className='inputFilter' type="text" {...inputDescription}/>
 
                 <p className='inputTextFilterMenu'>Наименование Укр.</p>
-                <input className='inputFilter' type="text" value={inputDescriptionUa} onChange={descriptionUaHandler}/>
+                <input className='inputFilter' type="text" {...inputDescriptionUa}/>
             </div>
             <div className='wrapperButtonCancelInFilterMenu'>
                 <div className="box-1" onClick={applyChanges}>

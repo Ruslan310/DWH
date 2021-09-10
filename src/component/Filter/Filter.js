@@ -1,35 +1,42 @@
 import React from 'react';
 import {connect} from "react-redux";
-import {searchFilterCardList, setFilterOn} from "../store/action";
+import {
+    getCardList,
+    infoMessage,
+    setFilterList,
+    setFilterOn,
+    setSelectPageOnCardList
+} from "../../store/action";
 import FilterCardList from "./FilterPage/FilterCardList";
 
 const mapStateToProps = (state) => ({
     isFilter: state.main.isFilter,
+    whatPageOpen: state.main.whatPageOpen,
+    whatCardListPage: state.main.whatCardListPage
 })
 const mapDispatchToProps = ({
-    setFilterOn, searchFilterCardList
+    setFilterOn, getCardList, setFilterList, setSelectPageOnCardList, infoMessage
 })
-
 
 const Filter$ = (props) => {
 
-    const closedFilterMenu = () => {
-        props.setFilterOn('')
-    }
-
     return (
         <div className={props.isFilter ? 'contentFilterMenu activeFilter' : 'contentFilterMenu'}>
-            <div className='titleFilterMenu' onClick={closedFilterMenu}>
+            <div className='titleFilterMenu' onClick={()=>props.setFilterOn('')}>
                 <div>
                     <div className="leftRight"> </div>
                     <div className="rightLeft"> </div>
                 </div>
                 <p className='nameTitleFilter'>Filter</p>
             </div>
+            {props.whatPageOpen === 'cardList' &&
+                <FilterCardList
+                    getCardList={props.getCardList}
+                    setSelectPageOnCardList={props.setSelectPageOnCardList}
+                    setFilterList={props.setFilterList}
+                    infoMessage={props.infoMessage}
+                />}
 
-            <FilterCardList
-                searchFilterCardList={props.searchFilterCardList}
-            />
         </div>
     )
 }
